@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const https = require('https');
 const path = require('path');
 
 const app = express();
@@ -54,7 +55,16 @@ app.get('/stream/:videoName', (req, res) => {
     });
 });
 
+// Paths to SSL certificate and private key
+const sslOptions = {
+    key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
+};
+
+// Create HTTPS server
+const server = https.createServer(sslOptions, app);
+
 // Start the server
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+server.listen(port, () => {
+    console.log(`Server is running on https://localhost:${port}`);
 });
